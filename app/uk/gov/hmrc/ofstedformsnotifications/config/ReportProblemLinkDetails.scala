@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(govukWrapper: GovukWrapper)
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
+package uk.gov.hmrc.ofstedformsnotifications.config
 
-@contentHeader = {
-  <h1>@heading</h1>
-}
+import javax.inject.Inject
 
-@mainContent = {
-  <p>@message</p>
-}
-
-@govukWrapper(title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)
+case class ReportProblemLinkDetails @Inject()(ajax: String, noJs: String)

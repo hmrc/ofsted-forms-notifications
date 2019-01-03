@@ -1,0 +1,108 @@
+@*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.play.views.html.layouts.Head
+@import views.html.layouts.GovUkTemplate
+@import uk.gov.hmrc.play.views.html.layouts._
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.ofstedformsnotifications.config.{ReportProblemLinkDetails, AnalyticsDetails}
+
+
+@this(hmrcGovUkTemplate: GovUkTemplate,
+        headLayout: Head,
+        headerNav: HeaderNav,
+        footer: Footer,
+        serviceInfoLayout: ServiceInfo,
+        mainContentHeader: MainContentHeader,
+        mainContent: MainContent,
+        reportAProblemLink:ReportAProblemLink,
+        analyticsDetails: AnalyticsDetails,
+        footerLink: FooterLinks,
+        problemLinkDetails: ReportProblemLinkDetails)
+
+
+@(title: String,
+  mainClass: Option[String] = None,
+  mainDataAttributes: Option[Html] = None,
+  bodyClasses: Option[String] = None,
+  sidebar: Html = HtmlFormat.empty,
+  contentHeader: Option[Html] = None,
+  mainContent: Html = HtmlFormat.empty,
+  serviceInfoContent: Html = HtmlFormat.empty,
+  scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Messages)
+
+
+@head = {
+    @headLayout(
+      linkElem = None,
+      headScripts = None)
+    <meta name="format-detection" content="telephone=no" />
+}
+
+@headerNavLinks = {}
+
+@insideHeader = {
+    @headerNav(
+      navTitle = Some("ofsted-forms-notifications"),
+      navTitleLink = None,
+      showBetaLink = false,
+      navLinks = Some(headerNavLinks))
+}
+
+@afterHeader = {}
+
+@bodyEnd = {
+    @footer(
+      analyticsToken = Some(analyticsDetails.token),
+      analyticsHost = analyticsDetails.host,
+      ssoUrl = None,
+      scriptElem = scriptElem,
+      gaCalls = None)
+}
+
+@footerTop = {}
+@footerLinks = {}
+
+@serviceInfo = {
+    @serviceInfoLayout(
+      betaBanner = HtmlFormat.empty,
+      includeGridWrapper = false,
+      serviceInfoContent = Some(serviceInfoContent))
+}
+
+@mainContentHeader = {
+    @if(contentHeader.isDefined) {
+        @mainContentHeader
+    }
+}
+
+@getHelpForm = @{reportAProblemLink(problemLinkDetails.ajax, problemLinkDetails.noJs)}
+
+@content = {
+    @mainContent
+@*    (
+      article = mainContent,
+      mainClass = mainClass,
+      mainDataAttributes = mainDataAttributes,
+      mainContentHeader = mainContentHeader,
+      serviceInfo = serviceInfo,
+      getHelpForm = getHelpForm,
+      sidebar = sidebar)
+      *@
+}
+
+@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(footerLinks), true)(content)
