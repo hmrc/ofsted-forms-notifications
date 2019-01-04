@@ -6,9 +6,10 @@ import sbt._
 object AppDependencies {
 
   val compile = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-play-26"        % "0.34.0",
-    "uk.gov.hmrc"             %% "govuk-template"           % "5.26.0-play-26",
-    "uk.gov.hmrc"             %% "play-ui"                  % "7.27.0-play-26"
+    "uk.gov.hmrc"             %% "bootstrap-play-26"         % "0.34.0",
+    "uk.gov.hmrc"             %% "govuk-template"            % "5.26.0-play-26",
+    "uk.gov.hmrc"             %% "play-ui"                   % "7.27.0-play-26",
+    "uk.gov.service.notify"   %  "notifications-java-client" % "3.13.0-RELEASE"
   )
 
   val test = Seq(
