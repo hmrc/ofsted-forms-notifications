@@ -35,7 +35,7 @@ final case class TemplateId(value: UUID) {
 object TemplateId {
   def apply(value: String): TemplateId = new TemplateId(UUID.fromString(value))
 
-  implicit val reads: Reads[TemplateId] = Reads.StringReads.map(apply(_))
+  implicit val reads: Reads[TemplateId] = Reads.StringReads.map(apply)
 }
 
 final case class Email(value: String)
@@ -45,7 +45,7 @@ final case class PhoneNumber(value: String)
 final case class Reference(value: String)
 
 object Reference {
-  implicit val reads: Reads[Reference] = Reads.StringReads.map(apply(_))
+  implicit val reads: Reads[Reference] = Reads.StringReads.map(apply)
 }
 
 final case class NotificationId(value: UUID) {
@@ -55,7 +55,7 @@ final case class NotificationId(value: UUID) {
 object NotificationId {
   def apply(value: String): NotificationId = new NotificationId(UUID.fromString(value))
 
-  implicit val reads: Reads[NotificationId] = Reads.StringReads.map(apply(_))
+  implicit val reads: Reads[NotificationId] = Reads.StringReads.map(apply)
 }
 
 final case class EmailNotification(notificationId: NotificationId,
@@ -86,13 +86,13 @@ final case class LetterNotification(notificationId: NotificationId,
 final case class LetterUploadNotification(notificationId: NotificationId,
                                           reference: Option[Reference])
 
-final case class Address(line1: Option[String],
-                         line2: Option[String],
+final case class Address(line1: String,
+                         line2: String,
                          line3: Option[String],
                          line4: Option[String],
                          line5: Option[String],
                          line6: Option[String],
-                         postcode: Option[String])
+                         postcode: String)
 
 final case class NotificationResponse(id: NotificationId,
                                       reference: Option[Reference],
@@ -123,7 +123,7 @@ final case class TemplateResponse(id: UUID,
                                   version: Int,
                                   body: String,
                                   subject: Option[String],
-                                  personalisation: Option[Map[String, Any]])
+                                  personalisation: Map[String, Any])
 
 final case class TemplatePreviewResponse(id: UUID,
                                          templateType: String,

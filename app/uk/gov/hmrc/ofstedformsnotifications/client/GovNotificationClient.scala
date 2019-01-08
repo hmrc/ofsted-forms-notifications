@@ -131,18 +131,17 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
   override def getNotificationById(notificationId: NotificationId): Future[NotificationResponse] = {
     Future {
       val response = notificationClient.getNotificationById(notificationId.asString)
-      val line1 = toOption(response.getLine1)
-      val line2 = toOption(response.getLine2)
       val line3 = toOption(response.getLine3)
       val line4 = toOption(response.getLine4)
       val line5 = toOption(response.getLine5)
       val line6 = toOption(response.getLine6)
-      val postCode = toOption(response.getPostcode)
-      val address: Option[Address] = if (List(line1, line2, line3, line4, line5, line6, postCode).flatten.nonEmpty) {
-        Some(Address(line1, line2, line3, line4, line5, line6, postCode))
-      } else {
-        None
-      }
+
+      val address: Option[Address] = for {
+        line1 <- toOption(response.getLine1)
+        line2 <- toOption(response.getLine2)
+        postCode <- toOption(response.getPostcode)
+      } yield Address(line1, line2, line3, line4, line5, line6, postCode)
+
       NotificationResponse(
         NotificationId(response.getId),
         toOption(response.getReference).map(Reference.apply),
@@ -164,6 +163,7 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
       )
     }
   }
+
 
   override def getNotifications(status: String, notificationType: String, reference: Reference, olderThanId: String): Future[NotificationList] = {
     Future {
@@ -189,7 +189,7 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
         response.getVersion,
         response.getBody(),
         toOption(response.getSubject),
-        toOption(response.getPersonalisation).map(_.asScala.toMap)
+        toOption(response.getPersonalisation).map(_.asScala.toMap).getOrElse(Map.empty)
       )
     }
   }
@@ -207,7 +207,7 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
         response.getVersion,
         response.getBody(),
         toOption(response.getSubject),
-        toOption(response.getPersonalisation).map(_.asScala.toMap)
+        toOption(response.getPersonalisation).map(_.asScala.toMap).getOrElse(Map.empty)
       )
     }
   }
@@ -227,7 +227,7 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
             iterElem.getVersion,
             iterElem.getBody,
             toOption(iterElem.getSubject),
-            toOption(iterElem.getPersonalisation).map(_.asScala.toMap)
+            toOption(iterElem.getPersonalisation).map(_.asScala.toMap).getOrElse(Map.empty)
           ))
         }
       }
@@ -250,8 +250,8 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
   override def getReceivedTextMessages(template: TemplateId): Future[ReceivedTextMessageResponse] = {
     Future {
       val response = notificationClient.getReceivedTextMessages(template.asString)
-      val receivedTextMessages: List[ReceivedTextMessageItem] = response.getReceivedTextMessages.asScala.map { iterElem =>
-        ReceivedTextMessageItem(
+      val receivedTextMessages: List[ReceivedTextMessageItem] = response.getReceivedTextMessages.asScala.map {
+        iterElem => ReceivedTextMessageItem(
           iterElem.getId,
           iterElem.getNotifyNumber,
           iterElem.getUserNumber,
