@@ -31,12 +31,12 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
 
   override def sendByEmail(template: TemplateId,
                            email: Email,
-                           personalization : HashMap[String, Any],
+                           personalization: Map[String, Any],
                            reference: Reference): Future[EmailNotification] = {
     Future {
       val response = notificationClient.sendEmail(template.asString, email.value, personalization.asJava, reference.value)
-      val responseReference = Option(response.getReference.orElse(null)).map(Reference.apply)
-      val fromEmail: Option[String] = Option(response.getFromEmail.orElse(null))
+      val responseReference = toOption(response.getReference).map(Reference.apply)
+      val fromEmail: Option[String] = toOption(response.getFromEmail)
       EmailNotification(
         NotificationId(response.getNotificationId),
         responseReference,
@@ -58,8 +58,8 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
 
       val response = notificationClient.sendSms(template.asString, phoneNumber.value, personalization.asJava, reference.value)
 
-      val responseReference = Option(response.getReference.orElse(null)).map(Reference.apply)
-      val fromNumber: Option[String] = Option(response.getFromNumber.orElse(null))
+      val responseReference = toOption(response.getReference).map(Reference.apply)
+      val fromNumber: Option[String] = toOption(response.getFromNumber)
 
       SmsNotification(
         NotificationId(response.getNotificationId),
@@ -75,12 +75,12 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
 
   override def sendDocumentByEmail(template: TemplateId,
                                    email: Email,
-                                   personalization: HashMap[String, Any],
+                                   personalization: Map[String, Any],
                                    reference: Reference): Future[EmailNotification] = {
     Future {
       val response = notificationClient.sendEmail(template.asString, email.value, personalization.asJava, reference.value)
-      val responseReference = Option(response.getReference.orElse(null)).map(Reference.apply)
-      val fromEmail: Option[String] = Option(response.getFromEmail.orElse(null))
+      val responseReference = toOption(response.getReference).map(Reference.apply)
+      val fromEmail: Option[String] = toOption(response.getFromEmail)
       EmailNotification(
         NotificationId(response.getNotificationId),
         responseReference,
@@ -95,7 +95,7 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
   }
 
   override def sendByLetter(template: TemplateId,
-                            personalization: HashMap[String, Any],
+                            personalization: Map[String, Any],
                             reference: Reference): Future[LetterNotification] = {
     Future {
       val response = notificationClient.sendLetter(template.asString, personalization.asJava, reference.value)
@@ -112,7 +112,7 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
     }
   }
 
-  override def sendByPrecompiledLetter(reference: Reference, file : File) : Future[LetterUploadNotification] = {
+  override def sendByPrecompiledLetter(reference: Reference, file: File): Future[LetterUploadNotification] = {
     Future {
       val response = notificationClient.sendPrecompiledLetter(reference.value, file)
       val responseReference = Option(response.getReference.orElse(null)).map(Reference.apply)
@@ -120,7 +120,7 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
     }
   }
 
-  override def sendByPrecompiledLetterWithInputStream(reference: Reference, fileIOStream : FileInputStream) : Future[LetterUploadNotification] = {
+  override def sendByPrecompiledLetter(reference: Reference, fileIOStream: FileInputStream): Future[LetterUploadNotification] = {
     Future {
       val response = notificationClient.sendPrecompiledLetterWithInputStream(reference.value, fileIOStream)
       val responseReference = Option(response.getReference.orElse(null)).map(Reference.apply)
@@ -128,48 +128,55 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
     }
   }
 
-  override def getNotificationById(notifcationId : NotificationId) : Future[NotificationResponse] = {
+  override def getNotificationById(notificationId: NotificationId): Future[NotificationResponse] = {
     Future {
-      val response = notificationClient.getNotificationById(notifcationId.value.toString)
-      NotificationResponse(response.getId,
-        Option(response.getReference.orElse(null)).map(Reference.apply),
-        Option(response.getEmailAddress.orElse(null)).map(Email.apply),
-        Option(response.getPhoneNumber.orElse(null)),
-        Option(response.getLine1.orElse(null)),
-        Option(response.getLine2.orElse(null)),
-        Option(response.getLine3.orElse(null)),
-        Option(response.getLine4.orElse(null)),
-        Option(response.getLine5.orElse(null)),
-        Option(response.getLine6.orElse(null)),
-        Option(response.getPostcode.orElse(null)),
+      val response = notificationClient.getNotificationById(notificationId.asString)
+      val line1 = toOption(response.getLine1)
+      val line2 = toOption(response.getLine2)
+      val line3 = toOption(response.getLine3)
+      val line4 = toOption(response.getLine4)
+      val line5 = toOption(response.getLine5)
+      val line6 = toOption(response.getLine6)
+      val postCode = toOption(response.getPostcode)
+      val address: Option[Address] = if (List(line1, line2, line3, line4, line5, line6, postCode).flatten.nonEmpty) {
+        Some(Address(line1, line2, line3, line4, line5, line6, postCode))
+      } else {
+        None
+      }
+      NotificationResponse(
+        NotificationId(response.getId),
+        toOption(response.getReference).map(Reference.apply),
+        toOption(response.getEmailAddress).map(Email.apply),
+        toOption(response.getPhoneNumber).map(PhoneNumber.apply),
+        address,
         Option(response.getNotificationType),
         response.getStatus,
-        response.getTemplateId,
+        TemplateId(response.getTemplateId),
         response.getTemplateVersion,
         response.getTemplateUri,
         response.getBody,
-        Option(response.getSubject.orElse(null)),
+        toOption(response.getSubject),
         Option(response.getCreatedAt),
-        Option(response.getSentAt.orElse(null)),
-        Option(response.getCompletedAt.orElse(null)),
-        Option(response.getEstimatedDelivery.orElse(null)),
-        Option(response.getCreatedByName.orElse(null))
+        toOption(response.getSentAt),
+        toOption(response.getCompletedAt),
+        toOption(response.getEstimatedDelivery),
+        toOption(response.getCreatedByName)
       )
     }
   }
 
-  override def getNotifications(status : String, notificationType : String, reference: Reference, olderThanId : String) : Future[NotificationList] = {
+  override def getNotifications(status: String, notificationType: String, reference: Reference, olderThanId: String): Future[NotificationList] = {
     Future {
       val response = notificationClient.getNotifications(status, notificationType, reference.value, olderThanId)
       NotificationList(
         response.getNotifications.asScala.toList,
         response.getCurrentPageLink,
-        Option(response.getNextPageLink.orElse(null))
+        toOption(response.getNextPageLink)
       )
     }
   }
 
-  override def getTemplateById(templateId : TemplateId) : Future[TemplateResponse] = {
+  override def getTemplateById(templateId: TemplateId): Future[TemplateResponse] = {
     Future {
       val response = notificationClient.getTemplateById(templateId.asString)
       TemplateResponse(
@@ -177,18 +184,17 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
         response.getName,
         response.getTemplateType,
         response.getCreatedAt,
-        Option(response.getUpdatedAt.orElse(null)),
+        toOption(response.getUpdatedAt),
         response.getCreatedBy,
         response.getVersion,
         response.getBody(),
-        Option(response.getSubject.orElse(null)),
-        Option((response.getPersonalisation.orElse(null)).asScala.toMap)
+        toOption(response.getSubject),
+        toOption(response.getPersonalisation).map(_.asScala.toMap)
       )
     }
-
   }
 
-  override def getTemplateByIdAndVersion(templateId : TemplateId, version : Int) : Future[TemplateResponse] = {
+  override def getTemplateByIdAndVersion(templateId: TemplateId, version: Int): Future[TemplateResponse] = {
     Future {
       val response = notificationClient.getTemplateVersion(templateId.asString, version)
       TemplateResponse(
@@ -196,17 +202,17 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
         response.getName,
         response.getTemplateType,
         response.getCreatedAt,
-        Option(response.getUpdatedAt.orElse(null)),
+        toOption(response.getUpdatedAt),
         response.getCreatedBy,
         response.getVersion,
         response.getBody(),
-        Option(response.getSubject.orElse(null)),
-        Option((response.getPersonalisation.orElse(null)).asScala.toMap)
+        toOption(response.getSubject),
+        toOption(response.getPersonalisation).map(_.asScala.toMap)
       )
     }
   }
 
-  override def getAllTemplates(templateType : String) : Future[List[TemplateResponse]] = {
+  override def getAllTemplates(templateType: String): Future[List[TemplateResponse]] = {
     Future {
       val response = notificationClient.getAllTemplates(templateType)
       response.getTemplates.asScala.foldLeft(List[TemplateResponse]()) {
@@ -216,51 +222,54 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
             iterElem.getName,
             iterElem.getTemplateType,
             iterElem.getCreatedAt,
-            Option(iterElem.getUpdatedAt.orElse(null)),
+            toOption(iterElem.getUpdatedAt),
             iterElem.getCreatedBy,
             iterElem.getVersion,
-            iterElem.getBody(),
-            Option(iterElem.getSubject.orElse(null)),
-            Option((iterElem.getPersonalisation.orElse(null)).asScala.toMap)
+            iterElem.getBody,
+            toOption(iterElem.getSubject),
+            toOption(iterElem.getPersonalisation).map(_.asScala.toMap)
           ))
         }
       }
     }
   }
 
-  override def getTemplatePreview(template: TemplateId, personalization: HashMap[String, Object]): Future[TemplatePreviewResponse] = {
-    Future{
+  override def getTemplatePreview(template: TemplateId, personalization: Map[String, Object]): Future[TemplatePreviewResponse] = {
+    Future {
       val response = notificationClient.generateTemplatePreview(template.asString, personalization.asJava)
       TemplatePreviewResponse(
         response.getId,
         response.getTemplateType,
         response.getVersion,
         response.getBody,
-        Option(response.getSubject.orElse(null))
+        toOption(response.getSubject)
       )
     }
   }
 
   override def getReceivedTextMessages(template: TemplateId): Future[ReceivedTextMessageResponse] = {
-    Future{
+    Future {
       val response = notificationClient.getReceivedTextMessages(template.asString)
-      val receivedTextMessagesList = response.getReceivedTextMessages.asScala.foldLeft(List[ReceivedTextMessageItem]()) {
-        (carryOver, iterElem) => {
-          carryOver ++ List(ReceivedTextMessageItem(
-            iterElem.getId,
-            iterElem.getNotifyNumber,
-            iterElem.getUserNumber,
-            iterElem.getServiceId,
-            iterElem.getContent,
-            iterElem.getCreatedAt
-          ))
-        }
-      }
+      val receivedTextMessages: List[ReceivedTextMessageItem] = response.getReceivedTextMessages.asScala.map { iterElem =>
+        ReceivedTextMessageItem(
+          iterElem.getId,
+          iterElem.getNotifyNumber,
+          iterElem.getUserNumber,
+          iterElem.getServiceId,
+          iterElem.getContent,
+          iterElem.getCreatedAt
+        )
+      }(collection.breakOut)
 
-      ReceivedTextMessageResponse(receivedTextMessagesList,
+      ReceivedTextMessageResponse(
+        receivedTextMessages,
         response.getCurrentPageLink,
-        Option(response.getNextPageLink.orElse(null))
+        toOption(response.getNextPageLink)
       )
     }
+  }
+
+  private def toOption[T](option: java.util.Optional[T]): Option[T] = {
+    Option(option.orElseGet(null))
   }
 }
