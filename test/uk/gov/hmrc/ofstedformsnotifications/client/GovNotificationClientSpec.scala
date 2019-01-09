@@ -35,7 +35,7 @@ class GovNotificationClientSpec extends AsyncFlatSpec with Matchers {
   val template = TemplateId("f0b80f67-9782-4178-89ff-52e4ac8de447")
 
   val email = Email("mohan.rao.dolla@digital.hmrc.gov.uk")
-  
+
   it should "send email notification" in {
 
     val personalisation = Map[String, Any]("link_to_document" -> "SomeString from Mohan")

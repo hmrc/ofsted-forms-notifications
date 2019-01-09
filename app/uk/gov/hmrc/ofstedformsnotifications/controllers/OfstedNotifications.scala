@@ -42,7 +42,7 @@ class OfstedNotifications @Inject()(mcc: MessagesControllerComponents,
       notification => notifications.sendByEmail(
         templates.submission,
         notification.email,
-        Map("form_id" -> notification.id, "submission-time" -> formatter.format(notification.time)),
+        Map("form-id" -> notification.id, "submission-time" -> formatter.format(notification.time)),
         Reference(notification.id)
       ).map(result => Ok(result.notificationId.asString))
     )
@@ -55,7 +55,7 @@ class OfstedNotifications @Inject()(mcc: MessagesControllerComponents,
         templates.acceptance,
         notification.email,
         Map(
-          "form_id" -> notification.id,
+          "form-id" -> notification.id,
           "acceptance-time" -> formatter.format(notification.time)
         ),
         Reference(notification.id)
@@ -70,7 +70,7 @@ class OfstedNotifications @Inject()(mcc: MessagesControllerComponents,
         templates.rejection,
         notification.email,
         Map(
-          "form_id" -> notification.id,
+          "form-id" -> notification.id,
           "rejection-time" -> formatter.format(notification.time),
           "url" -> rejectionUrl
         ),
