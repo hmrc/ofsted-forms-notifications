@@ -16,14 +16,10 @@
 
 package uk.gov.hmrc.ofstedformsnotifications.client
 
-import java.io.{File, FileInputStream}
-
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import uk.gov.service.notify.NotificationClient
-import java.nio.file.{Files, Paths}
 
-import scala.collection.mutable
 import scala.concurrent._
 
 class GovNotificationClientSpec extends AsyncFlatSpec with Matchers {
@@ -39,10 +35,7 @@ class GovNotificationClientSpec extends AsyncFlatSpec with Matchers {
   val template = TemplateId("f0b80f67-9782-4178-89ff-52e4ac8de447")
 
   val email = Email("mohan.rao.dolla@digital.hmrc.gov.uk")
-
-
-  val smsNotificationId = NotificationId("a63c07dc-1394-4f79-a0f5-867b48d21d91")
-
+  
   it should "send email notification" in {
 
     val personalisation = Map[String, Any]("link_to_document" -> "SomeString from Mohan")
