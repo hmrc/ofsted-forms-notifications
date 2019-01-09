@@ -108,7 +108,7 @@ class GovNotificationClientSpec extends AsyncFlatSpec with Matchers {
   it should "send pre-compiled letter notification with InputStream" in {
 
     val precompiledPDFWithInputStream = new FileInputStream("./Mohan-Nov,2018-Invoice.pdf")
-    client.sendByPrecompiledLetterWithInputStream(Reference("ala-ma-kota-precompiled-letter"), precompiledPDFWithInputStream).map { result =>
+    client.sendByPrecompiledLetter(Reference("ala-ma-kota-precompiled-letter"), precompiledPDFWithInputStream).map { result =>
       result.notificationId shouldNot equal (null)
       result.reference shouldNot be (empty)
     }
