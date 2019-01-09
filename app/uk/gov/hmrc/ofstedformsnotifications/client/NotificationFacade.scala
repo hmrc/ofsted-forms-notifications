@@ -24,7 +24,6 @@ import play.api.libs.json.Reads
 import uk.gov.service.notify.Notification
 
 import scala.concurrent.Future
-import scala.language.implicitConversions
 
 final case class TemplateId(value: UUID) {
   def asString = value.toString

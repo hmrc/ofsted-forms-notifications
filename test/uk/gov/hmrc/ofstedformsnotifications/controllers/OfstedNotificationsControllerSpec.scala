@@ -41,17 +41,45 @@ class OfstedNotificationsControllerSpec extends WordSpec with Matchers with Guic
 
   val controller = app.injector.instanceOf[OfstedNotifications]
 
-  "GET /" should {
+  "POST /submisssion" should {
     "return 200" in {
       val result = controller.submission(fakeRequest)
       status(result) shouldBe Status.OK
     }
 
-    "return HTML" in {
+    "return UUID" in {
       val result = controller.submission(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
+      contentType(result) shouldBe Some("text/plain")
       charset(result) shouldBe Some("utf-8")
+      UUID.fromString(contentAsString(result))
+    }
+  }
+
+  "POST /acceptance" should {
+    "return 200" in {
+      val result = controller.acceptance(fakeRequest)
+      status(result) shouldBe Status.OK
     }
 
+    "return UUID" in {
+      val result = controller.acceptance(fakeRequest)
+      contentType(result) shouldBe Some("text/plain")
+      charset(result) shouldBe Some("utf-8")
+      UUID.fromString(contentAsString(result))
+    }
+  }
+
+  "POST /rejection" should {
+    "return 200" in {
+      val result = controller.rejection(fakeRequest)
+      status(result) shouldBe Status.OK
+    }
+
+    "return UUID" in {
+      val result = controller.rejection(fakeRequest)
+      contentType(result) shouldBe Some("text/plain")
+      charset(result) shouldBe Some("utf-8")
+      UUID.fromString(contentAsString(result))
+    }
   }
 }
