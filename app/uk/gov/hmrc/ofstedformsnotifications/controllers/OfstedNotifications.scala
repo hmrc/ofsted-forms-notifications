@@ -34,7 +34,7 @@ class OfstedNotifications @Inject()(mcc: MessagesControllerComponents,
                                     @Named("rejection-url") rejectionUrl: String)
                                    (implicit executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  private val formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy")
+  private val formatter = DateTimeFormatter.ofPattern("hh:mm a dd-MMMM-yyyy")
 
   val submission = Action.async(parse.json) { implicit request =>
     request.body.validate[FormNotification].fold(

@@ -38,15 +38,8 @@ class GovNotificationClientSpec extends AsyncFlatSpec with Matchers {
 
   val template = TemplateId("f0b80f67-9782-4178-89ff-52e4ac8de447")
 
-  val smsTemplate = TemplateId("565c4748-25a2-4adf-be86-1edcabf02c87")
-
-  val sendDocumentByEMailTemplate = TemplateId("f0b80f67-9782-4178-89ff-52e4ac8de447")
-
-  val sendLetterTemplate = TemplateId("a5317714-3dee-4bc1-ac4d-963e0d4049c1")
-
   val email = Email("mohan.rao.dolla@digital.hmrc.gov.uk")
 
-  val phoneNumber = PhoneNumber("+447849105908")
 
   val smsNotificationId = NotificationId("a63c07dc-1394-4f79-a0f5-867b48d21d91")
 
@@ -59,114 +52,4 @@ class GovNotificationClientSpec extends AsyncFlatSpec with Matchers {
       result.reference shouldNot be(empty)
     }
   }
-
-  it should "send sms notification" in {
-    client.sendBySms(smsTemplate, phoneNumber, Map.empty, Reference("ala-ma-kota-sms")).map { result =>
-      println("Mohan details = " + result.toString)
-      result.notificationId shouldNot equal(null)
-      result.reference shouldNot be(empty)
-    }
-  }
-
-  it should "send document by email notification" in {
-
-    val fileContents = Files.readAllBytes(Paths.get("./Mohan-Nov,2018-Invoice.pdf"))
-    val personalisation = Map[String, Any]("link_to_document" -> fileContents)
-
-    client.sendDocumentByEmail(sendDocumentByEMailTemplate, email, personalisation, Reference("ala-ma-kota-docuiment-by-email")).map { result =>
-      result.notificationId shouldNot equal(null)
-      result.reference shouldNot be(empty)
-    }
-  }
-
-  it should "send letter notification" in {
-
-    val address = Address(
-      "33",
-      "HopeGreen",
-      None,
-      None,
-      None,
-      None,
-      "WD25 7HQ "
-    )
-
-    val personalisation = Map[String, Any](
-      "address_line_1" -> "33",
-      "address_line_2" -> "HopeGreen",
-      "postcode" -> "WD25 7HQ ",
-      "first_name" -> "Mohan",
-      "application_date" -> "2019-01-07"
-    )
-
-    client.sendByLetter(sendLetterTemplate, address, personalisation, Reference("ala-ma-kota-letter")).map { result =>
-      result.notificationId shouldNot equal(null)
-      result.reference shouldNot be(empty)
-    }
-  }
-
-  // untill we could be live we are unable to test this
-  ignore should "send pre-compiled letter notification" in {
-    val precompiledPDF = new File("./Mohan-Nov,2018-Invoice.pdf")
-    client.sendByPrecompiledLetter(Reference("ala-ma-kota-precompiled-letter"), precompiledPDF).map { result =>
-      result.notificationId shouldNot equal(null)
-      result.reference shouldNot be(empty)
-    }
-  }
-
-  // untill we could be live we are unable to test this
-  ignore should "send pre-compiled letter notification with InputStream" in {
-    val precompiledPDFWithInputStream = new FileInputStream("./Mohan-Nov,2018-Invoice.pdf")
-    client.sendByPrecompiledLetter(Reference("ala-ma-kota-precompiled-letter"), precompiledPDFWithInputStream).map { result =>
-      result.notificationId shouldNot equal(null)
-      result.reference shouldNot be(empty)
-    }
-  }
-
-  it should "get notification by notificationId" in {
-    client.getNotificationById(smsNotificationId).map { result =>
-      result.templateId shouldNot equal(null)
-      result.reference shouldNot be(empty)
-    }
-  }
-
-  it should "get all notifications olderthanId" in {
-    client.getNotifications("delivered", null, Reference("get-All-notifications-sms"), null).map { result =>
-      result.notifications shouldNot be(null)
-    }
-  }
-
-  it should "get template by templateId" in {
-    client.getTemplateById(sendDocumentByEMailTemplate).map { result =>
-      result.body shouldNot be(empty)
-    }
-  }
-
-  it should "get template by templateId and version" in {
-    client.getTemplateByIdAndVersion(sendDocumentByEMailTemplate, 5).map { result =>
-      result.body shouldNot be(empty)
-    }
-  }
-
-  it should "get all templates by templateType" in {
-    client.getAllTemplates(null).map { result =>
-      result.size should be > 0
-    }
-  }
-
-  it should "get templatePreview by templateId and personalisation" in {
-    val personalisation = Map[String, Object](
-      "link_to_document" -> "This is personalisation text"
-    )
-    client.getTemplatePreview(sendDocumentByEMailTemplate, personalisation).map { result =>
-      result.body shouldNot be(empty)
-    }
-  }
-
-  it should "get all messages for given templateId" in {
-    client.getReceivedTextMessages(TemplateId("d179a38a-9e54-423d-8c2e-673d7eae5f76")).map { result =>
-      result.receivedTextMessagesList shouldNot be(null)
-    }
-  }
-
 }
