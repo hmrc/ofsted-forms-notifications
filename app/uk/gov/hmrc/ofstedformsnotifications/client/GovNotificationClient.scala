@@ -95,10 +95,21 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
   }
 
   override def sendByLetter(template: TemplateId,
+                            address: Address,
                             personalization: Map[String, Any],
                             reference: Reference): Future[LetterNotification] = {
     Future {
-      val response = notificationClient.sendLetter(template.asString, personalization.asJava, reference.value)
+      val addressParameters = Seq[Option[(String, Any)]](
+        Some("address_line_1" -> address.line1),
+        Some("address_line_2" -> address.line2),
+        Some("postcode" -> address.postcode),
+        address.line3.map(line => "address_line_3" -> line),
+        address.line4.map(line => "address_line_4" -> line),
+        address.line5.map(line => "address_line_5" -> line),
+        address.line6.map(line => "address_line_6" -> line)
+      ).flatten
+      val allPersonalization = personalization ++ addressParameters
+      val response = notificationClient.sendLetter(template.asString, allPersonalization.asJava, reference.value)
       val responseReference = Option(response.getReference.orElse(null)).map(Reference.apply)
       LetterNotification(
         NotificationId(response.getNotificationId),
@@ -251,14 +262,15 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
     Future {
       val response = notificationClient.getReceivedTextMessages(template.asString)
       val receivedTextMessages: List[ReceivedTextMessageItem] = response.getReceivedTextMessages.asScala.map {
-        iterElem => ReceivedTextMessageItem(
-          iterElem.getId,
-          iterElem.getNotifyNumber,
-          iterElem.getUserNumber,
-          iterElem.getServiceId,
-          iterElem.getContent,
-          iterElem.getCreatedAt
-        )
+        iterElem =>
+          ReceivedTextMessageItem(
+            iterElem.getId,
+            iterElem.getNotifyNumber,
+            iterElem.getUserNumber,
+            iterElem.getServiceId,
+            iterElem.getContent,
+            iterElem.getCreatedAt
+          )
       }(collection.breakOut)
 
       ReceivedTextMessageResponse(

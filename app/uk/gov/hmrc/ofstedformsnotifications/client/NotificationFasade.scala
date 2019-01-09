@@ -161,6 +161,7 @@ trait NotificationFasade {
                           reference: Reference): Future[EmailNotification]
 
   def sendByLetter(template: TemplateId,
+                   address: Address,
                    personalization: Map[String, Any],
                    reference: Reference): Future[LetterNotification]
 
