@@ -19,7 +19,7 @@ package uk.gov.hmrc.ofstedformsnotifications
 import com.google.inject.{AbstractModule, Provides}
 import javax.inject.{Named, Singleton}
 import play.api.Configuration
-import uk.gov.hmrc.ofstedformsnotifications.client.{GovNotificationClient, NotificationFasade, TemplateId}
+import uk.gov.hmrc.ofstedformsnotifications.client.{GovNotificationClient, NotificationFacade, TemplateId}
 import uk.gov.service.notify.{NotificationClient, NotificationClientApi}
 
 class Module extends AbstractModule {
@@ -48,6 +48,6 @@ class Module extends AbstractModule {
   }
 
   override def configure(): Unit = {
-    bind(classOf[NotificationFasade]).to(classOf[GovNotificationClient])
+    bind(classOf[NotificationFacade]).to(classOf[GovNotificationClient])
   }
 }

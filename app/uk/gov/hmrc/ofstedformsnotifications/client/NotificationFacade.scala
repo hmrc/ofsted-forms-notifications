@@ -147,7 +147,7 @@ final case class ReceivedTextMessageItem(id: UUID,
                                          createdAt: DateTime)
 
 
-trait NotificationFasade {
+trait NotificationFacade {
 
   def sendByEmail(template: TemplateId,
                   email: Email,

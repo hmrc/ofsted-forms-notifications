@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 class GovNotificationClient @Inject()(notificationClient: NotificationClientApi)
-                                     (implicit executionContext: ExecutionContext) extends NotificationFasade {
+                                     (implicit executionContext: ExecutionContext) extends NotificationFacade {
 
   override def sendByEmail(template: TemplateId,
                            email: Email,

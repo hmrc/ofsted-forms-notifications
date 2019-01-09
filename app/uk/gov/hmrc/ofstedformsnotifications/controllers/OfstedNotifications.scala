@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 import javax.inject.{Inject, Named, Singleton}
 import play.api.libs.json.JsError
 import play.api.mvc._
-import uk.gov.hmrc.ofstedformsnotifications.client.{NotificationFasade, Reference}
+import uk.gov.hmrc.ofstedformsnotifications.client.{NotificationFacade, Reference}
 import uk.gov.hmrc.ofstedformsnotifications.{FormNotification, TemplateConfiguration}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class OfstedNotifications @Inject()(mcc: MessagesControllerComponents,
-                                    notifications: NotificationFasade,
+                                    notifications: NotificationFacade,
                                     templates: TemplateConfiguration,
                                     @Named("rejection-url") rejectionUrl: String)
                                    (implicit executionContext: ExecutionContext) extends FrontendController(mcc) {
