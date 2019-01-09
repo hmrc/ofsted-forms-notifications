@@ -269,7 +269,7 @@ class GovNotificationClient(notificationClient: NotificationClientApi)
     }
   }
 
-  private def toOption[T](option: java.util.Optional[T]): Option[T] = {
-    Option(option.orElseGet(null))
+  private def toOption[T <: AnyRef](option: java.util.Optional[T]): Option[T] = {
+    Option(option.orElse(null.asInstanceOf[T]))
   }
 }
