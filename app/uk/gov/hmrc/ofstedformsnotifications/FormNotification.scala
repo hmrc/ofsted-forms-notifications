@@ -14,8 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ofstedformsnotifications.config
+package uk.gov.hmrc.ofstedformsnotifications
 
-import javax.inject.Inject
+import java.time.ZonedDateTime
 
-case class AnalyticsDetails @Inject()(token: String, host: String)
+import play.api.libs.json._
+import uk.gov.hmrc.ofstedformsnotifications.client.Email
+
+case class FormNotification(id: String, email: Email, time: ZonedDateTime)
+
+object FormNotification {
+  import play.api.libs.functional.syntax._
+  implicit val reads: Reads[FormNotification] = (
+    (__ \ "id").read[String] and
+      (__ \ "email").read[Email] and
+      (__ \ "time").read[ZonedDateTime]
+    ).apply(FormNotification.apply _)
+}
+
+
