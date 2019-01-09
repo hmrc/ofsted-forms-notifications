@@ -81,6 +81,16 @@ class GovNotificationClientSpec extends AsyncFlatSpec with Matchers {
 
   it should "send letter notification" in {
 
+    val address = Address(
+      "33",
+      "HopeGreen",
+      None,
+      None,
+      None,
+      None,
+      "WD25 7HQ "
+    )
+
     val personalisation = Map[String, Any](
       "address_line_1" -> "33",
       "address_line_2" -> "HopeGreen",
@@ -89,7 +99,7 @@ class GovNotificationClientSpec extends AsyncFlatSpec with Matchers {
       "application_date" -> "2019-01-07"
     )
 
-    client.sendByLetter(sendLetterTemplate, personalisation, Reference("ala-ma-kota-letter")).map { result =>
+    client.sendByLetter(sendLetterTemplate, address, personalisation, Reference("ala-ma-kota-letter")).map { result =>
       result.notificationId shouldNot equal(null)
       result.reference shouldNot be(empty)
     }

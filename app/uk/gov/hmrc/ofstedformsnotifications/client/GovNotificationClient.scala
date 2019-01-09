@@ -18,16 +18,15 @@ package uk.gov.hmrc.ofstedformsnotifications.client
 
 import java.io.{File, FileInputStream}
 
+import javax.inject.Inject
 import uk.gov.service.notify._
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.collection.JavaConverters._
-import scala.collection.mutable
-import scala.collection.mutable.HashMap
+import scala.concurrent.{ExecutionContext, Future}
 
 
-class GovNotificationClient(notificationClient: NotificationClientApi)
-                           (implicit executionContext: ExecutionContext) extends NotificationFasade {
+class GovNotificationClient @Inject()(notificationClient: NotificationClientApi)
+                                     (implicit executionContext: ExecutionContext) extends NotificationFasade {
 
   override def sendByEmail(template: TemplateId,
                            email: Email,

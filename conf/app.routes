@@ -1,3 +1,6 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.ofstedformsnotifications.controllers.HelloWorld.helloWorld
+POST       /submission             uk.gov.hmrc.ofstedformsnotifications.controllers.OfstedNotifications.submission
+POST       /acceptance             uk.gov.hmrc.ofstedformsnotifications.controllers.OfstedNotifications.acceptance
+POST       /rejection             uk.gov.hmrc.ofstedformsnotifications.controllers.OfstedNotifications.rejection
+

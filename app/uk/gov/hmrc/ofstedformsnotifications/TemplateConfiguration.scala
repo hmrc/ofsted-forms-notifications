@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,11 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(mainTemplate: MainTemplate)
-@()(implicit request: Request[_], messages: Messages)
+package uk.gov.hmrc.ofstedformsnotifications
 
-@mainTemplate(title = "Hello from ofsted-forms-notifications", bodyClasses = None) {
-    <h1>Hello from ofsted-forms-notifications !</h1>
-}
+import uk.gov.hmrc.ofstedformsnotifications.client.TemplateId
+
+case class TemplateConfiguration(submission: TemplateId,
+                                 acceptance: TemplateId,
+                                 rejection: TemplateId)

@@ -16,28 +16,39 @@
 
 package uk.gov.hmrc.ofstedformsnotifications.controllers
 
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.util.UUID
+
+import akka.stream.Materializer
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
-import play.api.i18n.{DefaultLangs, DefaultMessagesApi}
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Configuration, Environment}
 
 
-class HelloWorldControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSuite {
-  val fakeRequest = FakeRequest("GET", "/")
+class OfstedNotificationsControllerSpec extends WordSpec with Matchers with GuiceOneAppPerSuite {
 
-  val controller = app.injector.instanceOf[HelloWorld]
+  implicit val materializer: Materializer = app.injector.instanceOf[Materializer]
+
+  val fakeRequest = FakeRequest("POST", "/").withBody(Json.obj(
+    "id" -> UUID.randomUUID().toString,
+    "email" -> "lukasz.dubiel@digital.hmrc.gov.uk",
+    "time" -> DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+  ))
+
+  val controller = app.injector.instanceOf[OfstedNotifications]
 
   "GET /" should {
     "return 200" in {
-      val result = controller.helloWorld(fakeRequest)
+      val result = controller.submission(fakeRequest)
       status(result) shouldBe Status.OK
     }
 
     "return HTML" in {
-      val result = controller.helloWorld(fakeRequest)
+      val result = controller.submission(fakeRequest)
       contentType(result) shouldBe Some("text/html")
       charset(result) shouldBe Some("utf-8")
     }

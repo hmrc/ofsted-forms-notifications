@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ofstedformsnotifications.controllers
+package uk.gov.hmrc.ofstedformsnotifications
 
-import javax.inject.{Inject, Singleton}
+import java.time.ZonedDateTime
 
-import play.api.mvc._
+import play.api.libs.json._
+import uk.gov.hmrc.ofstedformsnotifications.client.Email
 
-import scala.concurrent.Future
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import uk.gov.hmrc.ofstedformsnotifications.views.html._
+case class FormNotification(id: String, email: Email, time: ZonedDateTime)
 
-@Singleton
-class HelloWorld @Inject()(hellowWorldPage: HelloWorldPage,
-                           mcc: MessagesControllerComponents) extends FrontendController(mcc) with I18nSupport {
-
-  val helloWorld = Action.async { implicit request =>
-    Future.successful(Ok(hellowWorldPage()))
-  }
-
-
-
+object FormNotification {
+  import play.api.libs.functional.syntax._
+  implicit val reads: Reads[FormNotification] = (
+    (__ \ "id").read[String] and
+      (__ \ "email").read[Email] and
+      (__ \ "time").read[ZonedDateTime]
+    ).apply(FormNotification.apply _)
 }
+
+

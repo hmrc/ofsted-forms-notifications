@@ -17,16 +17,14 @@
 package uk.gov.hmrc.ofstedformsnotifications.client
 
 import java.io.{File, FileInputStream}
-
-import play.api.libs.json.Reads
-
-import scala.concurrent.Future
 import java.util.UUID
 
 import org.joda.time.DateTime
-import uk.gov.service.notify.{Notification, SendLetterResponse, Template, TemplatePreview}
+import play.api.libs.json.Reads
+import uk.gov.service.notify.Notification
 
-import scala.collection.mutable.HashMap
+import scala.concurrent.Future
+import scala.language.implicitConversions
 
 final case class TemplateId(value: UUID) {
   def asString = value.toString
@@ -39,6 +37,11 @@ object TemplateId {
 }
 
 final case class Email(value: String)
+
+object Email {
+  // FIXME thing about this should be implicit...
+  implicit val reads: Reads[Email] = Reads.StringReads.map(apply)
+}
 
 final case class PhoneNumber(value: String)
 
@@ -112,6 +115,7 @@ final case class NotificationResponse(id: NotificationId,
                                       estimatedDelivery: Option[DateTime],
                                       createdByName: Option[String])
 
+//FIXME abstraction leak - class from implemenattion in external API
 final case class NotificationList(notifications: List[Notification], currentPageLink: String, nextPageLink: Option[String])
 
 final case class TemplateResponse(id: UUID,

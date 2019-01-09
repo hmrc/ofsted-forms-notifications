@@ -16,32 +16,38 @@
 
 package uk.gov.hmrc.ofstedformsnotifications
 
-import com.google.inject.AbstractModule
+import com.google.inject.{AbstractModule, Provides}
 import javax.inject.{Named, Singleton}
 import play.api.Configuration
-import uk.gov.hmrc.ofstedformsnotifications.config.{AnalyticsDetails, ReportProblemLinkDetails}
+import uk.gov.hmrc.ofstedformsnotifications.client.{GovNotificationClient, NotificationFasade, TemplateId}
+import uk.gov.service.notify.{NotificationClient, NotificationClientApi}
 
 class Module extends AbstractModule {
 
   @Singleton
-  def analyticsProvider(configuration: Configuration): AnalyticsDetails =  {
-    AnalyticsDetails(
-      token = configuration.get[String]("google-analytics.token"),
-      host = configuration.get[String]("google-analytics.host")
+  @Provides
+  def templateConfiguration(configuration: Configuration): TemplateConfiguration = {
+    TemplateConfiguration(
+      submission = TemplateId(configuration.get[String]("notifications.templates.submission")),
+      acceptance = TemplateId(configuration.get[String]("notifications.templates.acceptance")),
+      rejection = TemplateId(configuration.get[String]("notifications.templates.rejection"))
     )
   }
 
   @Singleton
-  def reportProblemLinks(configuration: Configuration): ReportProblemLinkDetails = {
-    val host = configuration.get[String]("contact-frontend.host")
-    val identifier = configuration.get[String]("contact-frontend.service-identifier")
-    ReportProblemLinkDetails(
-      ajax = s"$host/contact/problem_reports_ajax?service=$identifier",
-      noJs = s"$host/contact/problem_reports_nonjs?service=$identifier"
-    )
+  @Provides
+  def govNotification(configuration: Configuration): NotificationClientApi = {
+    new NotificationClient(configuration.get[String]("notifications.gov.api-key"))
+  }
+
+  @Provides
+  @Singleton
+  @Named("rejection-url")
+  def rejectionUrl(configuration: Configuration): String = {
+    configuration.get[String]("notifications.rejection.url")
   }
 
   override def configure(): Unit = {
-
+    bind(classOf[NotificationFasade]).to(classOf[GovNotificationClient])
   }
 }
