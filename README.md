@@ -5,9 +5,29 @@ This is a placeholder README.md for a new repository
 
 ## Notification template parameters
 
+All templates require JSON formatted body.
+
+Basic strcture 
+
+```json
+{
+  "time" : "2004-02-12T15:19:21+00:00",
+  "email" : "jan.kowalski@example.com"
+  "id" : "da7740d5-6026-4cdd-bbc1-10cb077cc47b"
+}
+
+```
+
+| field | Usage |
+| id | identifier of submitted form - could be arbitrarry string |
+| time  | when notified event happend. Formatted agins ISO8601 |
+| email | email where we should send notification |
+
 ### Submission
 
 Path: `/submission`
+
+#### Gov Notify template paramters
 
 | Paramter | Usage  | 
 |----------|--------|
@@ -18,6 +38,8 @@ Path: `/submission`
 
 Path: `/acceptance`
 
+#### Gov Notify template paramters
+
 | Paramter | Usage  | 
 |----------|--------|
 | form-id  | Identifier of form which cause notification |
@@ -26,6 +48,8 @@ Path: `/acceptance`
 ### Rejection
 
 Path: `/rejection`
+
+#### Gov Notify template paramters
 
 | Paramter | Usage  | 
 |----------|--------|
