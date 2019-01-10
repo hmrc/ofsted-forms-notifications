@@ -16,7 +16,10 @@
 
 package uk.gov.hmrc.ofstedformsnotifications.controllers
 
-import java.time.format.DateTimeFormatter
+import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
+import java.time.temporal.ChronoField
+import java.util
+import java.util.Locale
 
 import javax.inject.{Inject, Named, Singleton}
 import play.api.libs.json.JsError
@@ -24,19 +27,29 @@ import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.ofstedformsnotifications.client.{NotificationFacade, Reference}
 import uk.gov.hmrc.ofstedformsnotifications.{FormNotification, TemplateConfiguration}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OfstedNotifications @Inject()(mcc: MessagesControllerComponents,
+class OfstedNotifications @Inject()(cc: ControllerComponents,
                                     notifications: NotificationFacade,
                                     templates: TemplateConfiguration,
                                     @Named("rejection-url") rejectionUrl: String,
                                     val authConnector: AuthConnector)
-                                   (implicit executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                   (implicit executionContext: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  private val formatter = DateTimeFormatter.ofPattern("hh:mm a dd-MMMM-yyyy")
+  private val formatter = {
+    val patterns: util.Map[java.lang.Long, String] = new util.HashMap[java.lang.Long, String]()
+    patterns.put(0L, "am")
+    patterns.put(1L, "pm")
+    new DateTimeFormatterBuilder()
+      .appendPattern("h:mm")
+      .appendText(ChronoField.AMPM_OF_DAY, patterns)
+      .appendLiteral(' ')
+      .appendPattern("d MMMM YYYY")
+      .toFormatter
+  }
 
   val submission = Action.async(parse.json) { implicit request =>
     authorised() {
