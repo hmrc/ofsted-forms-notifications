@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.ofstedformsnotifications
 
+import java.util.regex.Pattern
+
 import com.google.inject.{AbstractModule, Provides}
 import javax.inject.{Named, Singleton}
 import play.api.Configuration
@@ -45,6 +47,12 @@ class Module extends AbstractModule {
   @Named("rejection-url")
   def rejectionUrl(configuration: Configuration): String = {
     configuration.get[String]("notifications.rejection.url")
+  }
+
+  @Provides
+  @Singleton
+  def userAgentPattern(configuration: Configuration): Option[Pattern] = {
+    configuration.get[Option[String]]("authorization.user-agent").map(Pattern.compile)
   }
 
   override def configure(): Unit = {
