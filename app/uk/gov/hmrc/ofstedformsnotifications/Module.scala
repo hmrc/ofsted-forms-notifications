@@ -60,8 +60,11 @@ class Module extends AbstractModule {
 
   @Singleton
   @Provides
-  def govNotification(configuration: Configuration): NotificationClientApi = {
-    new NotificationClient(configuration.get[String]("notifications.gov.api-key"))
+  def govNotification(configuration: Configuration, proxy: Option[Proxy]): NotificationClientApi = {
+    val apiKey = configuration.get[String]("notifications.gov.api-key")
+    proxy.map { proxy =>
+      new NotificationClient(apiKey, proxy)
+    }.getOrElse(new NotificationClient(apiKey))
   }
 
   @Provides
