@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.ofstedformsnotifications
 
+import java.net.{Authenticator, InetSocketAddress, Proxy}
 import java.util.regex.Pattern
 
 import com.google.inject.{AbstractModule, Provides}
 import javax.inject.{Named, Singleton}
 import play.api.Configuration
-import uk.gov.hmrc.ofstedformsnotifications.client.{GovNotificationClient, NotificationFacade, TemplateId}
+import uk.gov.hmrc.ofstedformsnotifications.client.{GovNotificationClient, NotificationFacade, ProxyAuthenticator, TemplateId}
 import uk.gov.service.notify.{NotificationClient, NotificationClientApi}
 
 class Module extends AbstractModule {
@@ -34,6 +35,27 @@ class Module extends AbstractModule {
       acceptance = TemplateId(configuration.get[String]("notifications.templates.acceptance")),
       rejection = TemplateId(configuration.get[String]("notifications.templates.rejection"))
     )
+  }
+
+  /**
+    * Authenticator related code comes from section - "How to use the Authenticator class"
+    * [1] https://docs.oracle.com/javase/8/docs/technotes/guides/net/http-auth.html
+    *
+    */
+  @Provides
+  @Singleton
+  def proxyConfiguratio(configuration: Configuration): Option[Proxy] = {
+    if(configuration.get[Boolean]("proxy.proxyRequiredForThisEnvironment")){
+      val host = configuration.get[String]("proxy.host")
+      val port = configuration.get[Int]("proxy.port")
+      val username = configuration.get[String]("proxy.user")
+      val password = configuration.get[String]("proxy.password")
+      Authenticator.setDefault(new ProxyAuthenticator(username, password.toCharArray)) // [1] look on javadoc
+      val address = new InetSocketAddress(host, port)
+      Some(new Proxy(Proxy.Type.HTTP, address))
+    } else {
+      None
+    }
   }
 
   @Singleton
