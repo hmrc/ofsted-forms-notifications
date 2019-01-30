@@ -21,6 +21,6 @@ import play.api.http.HttpFilters
 import play.api.mvc.EssentialFilter
 import uk.gov.hmrc.play.bootstrap.filters._
 
-class Filters @Inject()(frontendFilters: FrontendFilters, userAgentFilter: UserAgentFilter) extends HttpFilters {
+class Filters @Inject()(frontendFilters: MicroserviceFilters, userAgentFilter: UserAgentFilter) extends HttpFilters {
   override val filters: Seq[EssentialFilter] = frontendFilters.filters :+ userAgentFilter
 }
