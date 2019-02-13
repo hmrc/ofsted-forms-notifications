@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ofstedformsnotifications.client
+package uk.gov.hmrc.ofstedformsnotifications.client.gov
 
 import java.net.{Authenticator, PasswordAuthentication}
 

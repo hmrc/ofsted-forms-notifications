@@ -20,9 +20,11 @@ import java.net.{Authenticator, InetSocketAddress, Proxy}
 import java.util.regex.Pattern
 
 import com.google.inject.{AbstractModule, Provides}
-import javax.inject.{Named, Singleton}
+import javax.inject.{Named, Provider, Singleton}
 import play.api.{ConfigLoader, Configuration}
-import uk.gov.hmrc.ofstedformsnotifications.client.{GovNotificationClient, NotificationFacade, ProxyAuthenticator, TemplateId}
+import uk.gov.hmrc.ofstedformsnotifications.client.gov.{GovNotificationClient, ProxyAuthenticator}
+import uk.gov.hmrc.ofstedformsnotifications.client.test.TestNotifications
+import uk.gov.hmrc.ofstedformsnotifications.client.{NotificationFacade, TemplateId}
 import uk.gov.service.notify.{NotificationClient, NotificationClientApi}
 
 class Module extends AbstractModule {
@@ -77,6 +79,15 @@ class Module extends AbstractModule {
   @Singleton
   def userAgentPattern(configuration: Configuration): Option[Pattern] = {
     configuration.get[Option[String]]("authorization.user-agent").map(Pattern.compile)
+  }
+
+  def notificationFacadeProvider(configuration: Configuration,
+                                 govProvider: Provider[GovNotificationClient],
+                                 testProvider: Provider[TestNotifications]): NotificationFacade = {
+    configuration.get[String]("notifications.provider") match {
+      case "gov.uk" => govProvider.get()
+      case "test" => testProvider.get()
+    }
   }
 
   override def configure(): Unit = {
