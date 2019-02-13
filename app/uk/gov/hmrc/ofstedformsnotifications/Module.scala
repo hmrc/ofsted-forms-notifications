@@ -81,6 +81,8 @@ class Module extends AbstractModule {
     configuration.get[Option[String]]("authorization.user-agent").map(Pattern.compile)
   }
 
+  @Provides
+  @Singleton
   def notificationFacadeProvider(configuration: Configuration,
                                  govProvider: Provider[GovNotificationClient],
                                  testProvider: Provider[TestNotifications]): NotificationFacade = {
@@ -91,6 +93,6 @@ class Module extends AbstractModule {
   }
 
   override def configure(): Unit = {
-    bind(classOf[NotificationFacade]).to(classOf[GovNotificationClient])
+
   }
 }
