@@ -18,6 +18,7 @@ package uk.gov.hmrc.ofstedformsnotifications.client
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{AsyncFlatSpec, Matchers}
+import uk.gov.hmrc.ofstedformsnotifications.client.gov.GovNotificationClient
 import uk.gov.service.notify.NotificationClient
 
 import scala.concurrent._

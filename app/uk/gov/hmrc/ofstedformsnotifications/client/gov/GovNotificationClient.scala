@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.ofstedformsnotifications.client
-
-import java.io.{File, FileInputStream}
+package uk.gov.hmrc.ofstedformsnotifications.client.gov
 
 import javax.inject.Inject
+import uk.gov.hmrc.ofstedformsnotifications.client._
 import uk.gov.service.notify._
 
 import scala.collection.JavaConverters._
