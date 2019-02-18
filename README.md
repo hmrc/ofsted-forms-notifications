@@ -12,7 +12,7 @@ Basic strcture
 ```json
 {
   "time" : "2004-02-12T15:19:21+00:00",
-  "email" : "jan.kowalski@example.com"
+  "email" : "jan.kowalski@example.com",
   "id" : "da7740d5-6026-4cdd-bbc1-10cb077cc47b"
 }
 

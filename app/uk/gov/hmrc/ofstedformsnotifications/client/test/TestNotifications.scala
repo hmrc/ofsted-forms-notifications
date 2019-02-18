@@ -32,7 +32,7 @@ class TestNotifications extends NotificationFacade {
         EmailNotification(NotificationId(UUID.randomUUID()), None, template, 0, "", "", "", None)
       }
       case Email("error@example.com") => Future.failed(new Exception("Error in upstream comunication"))
-      case _ => Future.failed(new IllegalStateException("Error in upstream comunication"))
+      case _ => Future.failed(new IllegalStateException("Error in internal messeging"))
     }
   }
 }

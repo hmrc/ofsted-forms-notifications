@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.ofstedformsnotifications.controllers
 
-import java.time.Instant
+import java.time.{Instant, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -27,13 +27,14 @@ import org.mockito.integrations.scalatest.ResetMocksAfterEachTest
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContentAsJson, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment}
-import uk.gov.hmrc.ofstedformsnotifications.TemplateConfiguration
-import uk.gov.hmrc.ofstedformsnotifications.client.{EmailNotification, NotificationFacade, NotificationId, TemplateId}
+import uk.gov.hmrc.ofstedformsnotifications.{FormNotification, TemplateConfiguration}
+import uk.gov.hmrc.ofstedformsnotifications.client._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,11 +44,15 @@ class OfstedNotificationsControllerSpec extends WordSpec with Matchers with Guic
 
   implicit val materializer: Materializer = app.injector.instanceOf[Materializer]
 
-  val fakeRequest = FakeRequest("POST", "/").withBody(Json.obj(
-    "id" -> UUID.randomUUID().toString,
-    "email" -> "lukasz.dubiel@digital.hmrc.gov.uk",
-    "time" -> DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-  ))
+  val exampleNotification = FormNotification(
+    id = UUID.randomUUID().toString,
+    email = Email("lukasz.dubiel@digital.hmrc.gov.uk"),
+    time = ZonedDateTime.now()
+  )
+
+  val fakeRequest: Request[FormNotification] = FakeRequest("POST", "/")
+    .withBody(exampleNotification)
+    .withHeaders(CONTENT_TYPE -> "application/json")
 
   val notificationMock: NotificationFacade = mock[NotificationFacade]
 
@@ -97,7 +102,7 @@ class OfstedNotificationsControllerSpec extends WordSpec with Matchers with Guic
   "POST /submisssion" should {
     "return 200" in {
       setupNotification(submissionTemplate)
-      val result = controller.submission(fakeRequest)
+      val result = controller.submission.apply(fakeRequest)
       status(result) shouldBe Status.OK
     }
 
