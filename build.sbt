@@ -14,3 +14,10 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
+  .settings(
+    coverageExcludedPackages := """uk\.gov\.hmrc\.BuildInfo;.*\.Routes;.*\.RoutesPrefix;.*\.Reverse[^.]*""",
+    coverageMinimum := 80.00,
+    coverageFailOnMinimum := true,
+    coverageHighlighting := true,
+    parallelExecution in Test := false
+  )

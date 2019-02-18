@@ -16,20 +16,18 @@
 
 package uk.gov.hmrc.ofstedformsnotifications.controllers
 
-import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
+import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 import java.util
-import java.util.Locale
 
 import javax.inject.{Inject, Named, Singleton}
-import play.api.libs.json.JsError
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.ofstedformsnotifications.client.{NotificationFacade, Reference}
 import uk.gov.hmrc.ofstedformsnotifications.{FormNotification, TemplateConfiguration}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class OfstedNotifications @Inject()(cc: ControllerComponents,
@@ -51,54 +49,46 @@ class OfstedNotifications @Inject()(cc: ControllerComponents,
       .toFormatter
   }
 
-  val submission = Action.async(parse.json) { implicit request =>
+  val submission: Action[FormNotification] = Action.async(parse.json[FormNotification]) { implicit request =>
     authorised() {
-      request.body.validate[FormNotification].fold(
-        err => Future.successful(BadRequest(JsError.toJson(JsError(err)))),
-        notification => notifications.sendByEmail(
-          templates.submission,
-          notification.email,
-          Map("form-id" -> notification.id, "submission-time" -> formatter.format(notification.time)),
-          Reference(notification.id)
-        ).map(result => Ok(result.notificationId.asString))
-      )
+      val notification = request.body
+      notifications.sendByEmail(
+        templates.submission,
+        notification.email,
+        Map("form-id" -> notification.id, "submission-time" -> formatter.format(notification.time)),
+        Reference(notification.id)
+      ).map(result => Ok(result.notificationId.asString))
     }
   }
 
-  val acceptance = Action.async(parse.json) { implicit request =>
+  val acceptance: Action[FormNotification] = Action.async(parse.json[FormNotification]) { implicit request =>
     authorised() {
-      request.body.validate[FormNotification].fold(
-        err => Future.successful(BadRequest(JsError.toJson(JsError(err)))),
-        notification => notifications.sendByEmail(
-          templates.acceptance,
-          notification.email,
-          Map(
-            "form-id" -> notification.id,
-            "acceptance-time" -> formatter.format(notification.time)
-          ),
-          Reference(notification.id)
-        ).map(result => Ok(result.notificationId.asString))
-      )
+      val notification = request.body
+      notifications.sendByEmail(
+        templates.acceptance,
+        notification.email,
+        Map(
+          "form-id" -> notification.id,
+          "acceptance-time" -> formatter.format(notification.time)
+        ),
+        Reference(notification.id)
+      ).map(result => Ok(result.notificationId.asString))
     }
   }
 
-  val rejection = Action.async(parse.json) { implicit request =>
+  val rejection: Action[FormNotification] = Action.async(parse.json[FormNotification]) { implicit request =>
     authorised() {
-      request.body.validate[FormNotification].fold(
-        err => Future.successful(BadRequest(JsError.toJson(JsError(err)))),
-        notification => notifications.sendByEmail(
-          templates.rejection,
-          notification.email,
-          Map(
-            "form-id" -> notification.id,
-            "rejection-time" -> formatter.format(notification.time),
-            "url" -> rejectionUrl
-          ),
-          Reference(notification.id)
-        ).map(result => Ok(result.notificationId.asString))
-      )
+      val notification = request.body
+      notifications.sendByEmail(
+        templates.rejection,
+        notification.email,
+        Map(
+          "form-id" -> notification.id,
+          "rejection-time" -> formatter.format(notification.time),
+          "url" -> rejectionUrl
+        ),
+        Reference(notification.id)
+      ).map(result => Ok(result.notificationId.asString))
     }
   }
-
-
 }
