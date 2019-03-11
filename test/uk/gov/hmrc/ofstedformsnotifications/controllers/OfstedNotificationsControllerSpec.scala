@@ -47,7 +47,8 @@ class OfstedNotificationsControllerSpec extends WordSpec with Matchers with Guic
   val exampleNotification = FormNotification(
     id = UUID.randomUUID().toString,
     email = Email("lukasz.dubiel@digital.hmrc.gov.uk"),
-    time = ZonedDateTime.now()
+    time = ZonedDateTime.now(),
+    formKind = "SC1"
   )
 
   val fakeRequest: Request[FormNotification] = FakeRequest("POST", "/")
@@ -94,7 +95,7 @@ class OfstedNotificationsControllerSpec extends WordSpec with Matchers with Guic
   val controller = new OfstedNotifications(
     cc = stubControllerComponents(),
     notifications = notificationMock,
-    templates = TemplateConfiguration(submissionTemplate, acceptanceTemplate, rejectionTemplate),
+    templates = TemplateConfiguration(Map("SC1" -> submissionTemplate), Map("SC1" -> acceptanceTemplate), Map("SC1" -> rejectionTemplate)),
     rejectionUrl = "http://www.gov.uk/",
     authConnector = authMock
   )(ExecutionContext.global)

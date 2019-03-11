@@ -28,15 +28,21 @@ class FormNotificationReadsTest extends FlatSpec with Matchers {
     """{
       |  "time" : "2004-02-12T15:19:21+00:00",
       |  "email" : "jan.kowalski@example.com",
-      |  "id" : "da7740d5-6026-4cdd-bbc1-10cb077cc47b"
+      |  "id" : "da7740d5-6026-4cdd-bbc1-10cb077cc47b",
+      |  "kind" : "SC1"
       |}
     """.stripMargin
   )
 
   "FormNotification reads" should "produce correct form Notification" in {
-    val notification = FormNotification.reads.reads(exampleJson).getOrElse(fail())
-    notification.time shouldEqual ZonedDateTime.parse("2004-02-12T15:19:21+00:00")
-    notification.email shouldEqual Email("jan.kowalski@example.com")
-    notification.id shouldEqual "da7740d5-6026-4cdd-bbc1-10cb077cc47b"
+    val notification = FormNotification.reads.reads(exampleJson).fold(
+      err => fail(s"Error in reads ${err.toString}"),
+      notification => {
+        notification.time shouldEqual ZonedDateTime.parse("2004-02-12T15:19:21+00:00")
+        notification.email shouldEqual Email("jan.kowalski@example.com")
+        notification.id shouldEqual "da7740d5-6026-4cdd-bbc1-10cb077cc47b"
+      }
+    )
+
   }
 }

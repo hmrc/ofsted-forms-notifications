@@ -53,7 +53,7 @@ class OfstedNotifications @Inject()(cc: ControllerComponents,
     authorised() {
       val notification = request.body
       notifications.sendByEmail(
-        templates.submission,
+        templates.submissionFor(notification.formKind),
         notification.email,
         Map("form-id" -> notification.id, "submission-time" -> formatter.format(notification.time)),
         Reference(notification.id)
@@ -65,7 +65,7 @@ class OfstedNotifications @Inject()(cc: ControllerComponents,
     authorised() {
       val notification = request.body
       notifications.sendByEmail(
-        templates.acceptance,
+        templates.acceptanceFor(notification.formKind),
         notification.email,
         Map(
           "form-id" -> notification.id,
@@ -80,7 +80,7 @@ class OfstedNotifications @Inject()(cc: ControllerComponents,
     authorised() {
       val notification = request.body
       notifications.sendByEmail(
-        templates.rejection,
+        templates.rejection(notification.formKind),
         notification.email,
         Map(
           "form-id" -> notification.id,

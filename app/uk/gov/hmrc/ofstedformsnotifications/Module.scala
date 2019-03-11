@@ -32,10 +32,15 @@ class Module extends AbstractModule {
   @Singleton
   @Provides
   def templateConfiguration(configuration: Configuration): TemplateConfiguration = {
+    def parseTemplateId(config: Map[String, String]): Map[String, TemplateId] = config.map {
+      case (key, value) => (key, TemplateId(value))
+    }
+    val loadConfig = (configuration.get[Map[String, String]] _).andThen(parseTemplateId)
+
     TemplateConfiguration(
-      submission = TemplateId(configuration.get[String]("notifications.templates.submission")),
-      acceptance = TemplateId(configuration.get[String]("notifications.templates.acceptance")),
-      rejection = TemplateId(configuration.get[String]("notifications.templates.rejection"))
+      submission = loadConfig("notifications.templates.submission"),
+      acceptance = loadConfig("notifications.templates.acceptance"),
+      rejection = loadConfig("notifications.templates.rejection")
     )
   }
 
