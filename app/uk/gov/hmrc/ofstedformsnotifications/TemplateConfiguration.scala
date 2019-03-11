@@ -18,6 +18,19 @@ package uk.gov.hmrc.ofstedformsnotifications
 
 import uk.gov.hmrc.ofstedformsnotifications.client.TemplateId
 
-case class TemplateConfiguration(submission: TemplateId,
-                                 acceptance: TemplateId,
-                                 rejection: TemplateId)
+case class TemplateConfiguration(submission: Map[String, TemplateId],
+                                 acceptance: Map[String, TemplateId],
+                                 rejection: Map[String, TemplateId]) {
+
+  def submissionFor(formKind: String): TemplateId = {
+    submission.getOrElse(formKind, ???)
+  }
+
+  def acceptanceFor(formKind: String): TemplateId = {
+    acceptance.getOrElse(formKind, ???)
+  }
+
+  def rejectionFor(formKind: String): TemplateId = {
+    rejection.getOrElse(formKind, ???)
+  }
+}

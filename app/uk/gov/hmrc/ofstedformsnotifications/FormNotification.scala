@@ -21,14 +21,15 @@ import java.time.ZonedDateTime
 import play.api.libs.json._
 import uk.gov.hmrc.ofstedformsnotifications.client.Email
 
-case class FormNotification(id: String, email: Email, time: ZonedDateTime)
+case class FormNotification(id: String, email: Email, time: ZonedDateTime, formKind: String)
 
 object FormNotification {
   import play.api.libs.functional.syntax._
   implicit val reads: Reads[FormNotification] = (
     (__ \ "id").read[String] and
       (__ \ "email").read[Email] and
-      (__ \ "time").read[ZonedDateTime]
+      (__ \ "time").read[ZonedDateTime] and
+      (__ \ "kind").read[String]
     ).apply(FormNotification.apply _)
 }
 
