@@ -13,7 +13,8 @@ Basic strcture
 {
   "time" : "2004-02-12T15:19:21+00:00",
   "email" : "jan.kowalski@example.com",
-  "id" : "da7740d5-6026-4cdd-bbc1-10cb077cc47b"
+  "id" : "da7740d5-6026-4cdd-bbc1-10cb077cc47b",
+  "kind" : "SC1"
 }
 
 ```
@@ -22,6 +23,7 @@ Basic strcture
 | id | identifier of submitted form - could be arbitrarry string |
 | time  | when notified event happend. Formatted agins ISO8601 |
 | email | email where we should send notification |
+| kind | kind of form about we notify - SC1, SC2 |
 
 ### Submission
 
