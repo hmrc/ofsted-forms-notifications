@@ -1,7 +1,6 @@
-
 # ofsted-forms-notifications
 
-This is a placeholder README.md for a new repository
+This service has been shelved until further instruction.
 
 ## Notification template parameters
 
